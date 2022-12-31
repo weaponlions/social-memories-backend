@@ -25,7 +25,7 @@ app.all('*', (req,res) => {
 })
 
 
-const CONNECTION_URL = process.env.URL
+const CONNECTION_URL = "mongodb+srv://weaponlion:mernStack@cluster0.jzmj4r9.mongodb.net/?retryWrites=true&w=majority"
 
  
 const PORT = process.env.PORT
