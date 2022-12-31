@@ -27,15 +27,12 @@ app.all('*', (req,res) => {
 
 const CONNECTION_URL = process.env.URL
 
-const options = {
-    dbname : process.env.dbname
-} 
-
+ 
 const PORT = process.env.PORT
 
 mongoose.set('strictQuery', true);
 
-mongoose.connect(CONNECTION_URL, options, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(()=>{
     app.listen(PORT, ()=>{
         console.log("listening for requests");
@@ -44,4 +41,5 @@ mongoose.connect(CONNECTION_URL, options, { useNewUrlParser: true, useUnifiedTop
 .catch((err)=>{
     console.log(err.message);
 })
-  
+
+
