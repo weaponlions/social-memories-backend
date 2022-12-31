@@ -5,9 +5,7 @@ import userModel from "../model/userModel.js";
 export const createPost = async (req, res, next) => {
   try { 
     const user = await userModel.findById(req.userId);
-   
-    console.log(req.body);
-
+    
     const data = {
       ...req.body,
       tags: req.body?.tags.split(","), 
@@ -18,9 +16,7 @@ export const createPost = async (req, res, next) => {
     await newPost.save(); 
     console.log(newPost);
     return res.status(201).json(newPost);
-  } catch (err) {
-    console.log(err);
-    console.log(req.body);
+  } catch (err) { 
     return res.status(409).json({ message: err.message });
   }
 };
@@ -28,9 +24,7 @@ export const createPost = async (req, res, next) => {
 export const updatePost = async (req, res, next) => {
   try { 
       const { postId } = req.params
-      
-    console.log(req.body);
-
+       
       const data = {
         ...req.body,
         tags: req.body["tags"].split(","), 
@@ -39,13 +33,9 @@ export const updatePost = async (req, res, next) => {
       const newData = await postModel.findByIdAndUpdate({ _id: postId }, data, {
         new: true,
       });
-      
-    console.log(newData);
-
+        
       return res.status(203).json(newData); 
-  } catch (err) {
-    console.log(err);
-    console.log(req.body);
+  } catch (err) { 
 
     res.status(409).json({ message: err.message });
   }
