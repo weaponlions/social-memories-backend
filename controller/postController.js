@@ -6,19 +6,21 @@ export const createPost = async (req, res, next) => {
   try { 
     const user = await userModel.findById(req.userId);
    
+    console.log(req.body);
+
     const data = {
       ...req.body,
       tags: req.body?.tags.split(","), 
       creator: user.name,
       owner: user._id,
-    };
-    console.log(data);
+    }; 
     const newPost = new postModel(data);
     await newPost.save(); 
     console.log(newPost);
     return res.status(201).json(newPost);
   } catch (err) {
     console.log(err);
+    console.log(req.body);
     return res.status(409).json({ message: err.message });
   }
 };
@@ -27,6 +29,8 @@ export const updatePost = async (req, res, next) => {
   try { 
       const { postId } = req.params
       
+    console.log(req.body);
+
       const data = {
         ...req.body,
         tags: req.body["tags"].split(","), 
@@ -36,9 +40,13 @@ export const updatePost = async (req, res, next) => {
         new: true,
       });
       
+    console.log(newData);
+
       return res.status(203).json(newData); 
   } catch (err) {
     console.log(err);
+    console.log(req.body);
+
     res.status(409).json({ message: err.message });
   }
 };
