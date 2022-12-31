@@ -20,23 +20,25 @@ app.use(express.static('public'))
 app.use('/posts', postRouter)
 app.use('/users', userRouter)
 
+app.all('*', (req,res) => {
+    res.json({"every thing":"is awesome"})
+})
 
 
 const CONNECTION_URL = process.env.URL
-// this for local system
-// const CONNECTION_URL2 = process.env.SYS_MONGO
+
 const options = {
     dbname : process.env.dbname
-}
-// end sys
+} 
 
 const PORT = process.env.PORT
 
-// mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.set('strictQuery', true);
+
 mongoose.connect(CONNECTION_URL, options, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(()=>{
     app.listen(PORT, ()=>{
-        console.log(`Server Running on port http://localhost:${PORT}`);
+        console.log("listening for requests");
     })
 })
 .catch((err)=>{
