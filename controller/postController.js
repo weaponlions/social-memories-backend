@@ -12,9 +12,10 @@ export const createPost = async (req, res, next) => {
       creator: user.name,
       owner: user._id,
     };
-
+    console.log(data);
     const newPost = new postModel(data);
-    await newPost.save();
+    await newPost.save(); 
+    console.log(newPost);
     return res.status(201).json(newPost);
   } catch (err) {
     console.log(err);
