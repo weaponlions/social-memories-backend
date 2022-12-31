@@ -2,8 +2,11 @@ import userModel from "../model/userModel.js";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+
 dotenv.config()
- 
+
+const SECRET = 'test'
+const EXPIRY = '30m'
 
 export const signIn = async (req, res) => {
     const {email , password} = req.body;
@@ -17,7 +20,7 @@ export const signIn = async (req, res) => {
         if(!passwordCorrect)
             return res.status(202).json({message: 'Invalid Password'})
 
-        const token = jwt.sign({email: user.email, id: user._id}, process.env.SECRET, {expiresIn: process.env.EXPIRY})
+        const token = jwt.sign({email: user.email, id: user._id}, SECRET, {expiresIn: EXPIRY})
 
         res.status(200).json({user, token})
 
@@ -40,7 +43,7 @@ export const signUp = async (req, res) => {
 
         user.save()
 
-        const token = jwt.sign({email: user.email, id: user._id}, process.env.SECRET, {expiresIn: process.env.EXPIRY})
+        const token = jwt.sign({email: user.email, id: user._id}, SECRET, {expiresIn: EXPIRY})
 
         res.status(200).json({user, token})
          
@@ -56,14 +59,14 @@ export const googleLogin = async (req, res) => {
         let user = await userModel.findOne({email})
 
         if(user){
-            const token = jwt.sign({email: user.email, id: user._id}, process.env.SECRET, {expiresIn: process.env.EXPIRY})
+            const token = jwt.sign({email: user.email, id: user._id}, SECRET, {expiresIn: EXPIRY})
             return res.status(200).json({user, token})
         }
         else{
             user = await userModel.create({ email, picture, name: `${firstname} ${lastname}` })
             user.save()
 
-            const token = jwt.sign({email: user.email, id: user._id}, process.env.SECRET, {expiresIn: process.env.EXPIRY})
+            const token = jwt.sign({email: user.email, id: user._id}, SECRET, {expiresIn: EXPIRY})
             res.status(200).json({user, token}) 
         }
     } catch (err) { 
