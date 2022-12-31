@@ -11,8 +11,7 @@ const router = express.Router()
 router.get('/?search=:title/:tags/:page', getPageWithSearch)
 router.get('/:id', getSinglePost)
 router.post('/', auth, createPost)
-router.patch('/:id', auth, updatePost)
-router.post('/:id', auth, updatePost)
+router.patch('/:postId', auth, updatePost)
 router.delete('/:id', auth, deletePost)
 router.patch('/:id/likePost', auth, likePost)
 
@@ -22,6 +21,8 @@ router.get('/comment/child/:postID/:commentId/:page', getCommentChild)
 router.post('/comment/:postID', postComment)
 router.patch('/comment/:commentID', updateComment)
 router.delete('/comment/:commentID', removeComment)
+
+ 
 
 
 

@@ -28,7 +28,7 @@ app.all('*', (req,res) => {
 const CONNECTION_URL = "mongodb+srv://weaponlion:mernStack@cluster0.jzmj4r9.mongodb.net/?retryWrites=true&w=majority"
 
  
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 5000
 
 mongoose.set('strictQuery', true);
 
