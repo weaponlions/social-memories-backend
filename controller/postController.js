@@ -3,7 +3,6 @@ import userModel from "../model/userModel.js"
 
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
-import compress_images from 'compress-images';
 import { randomUUID } from "crypto"
 
 
@@ -11,7 +10,7 @@ export const createPost = async (req, res, next) => {
     try {        
         const file = req.files.selectedFile;
         const user = await userModel.findById(req.userId);
-        const tempDir = `./public/images/temp`;
+        const tempDir = `./public/images/${user._id}`;
 
         if (!existsSync(tempDir)) {
             await fs.mkdir(tempDir, { recursive: true });
@@ -20,24 +19,17 @@ export const createPost = async (req, res, next) => {
         const filename = `file_${new Date().getTime()}_${randomUUID()}`;
         const ext = (file.name).split('.')[1]; // extension of file
            
-        const uploadPath = `./public/images/temp/${filename}.${ext}`;  
-        await file.mv(uploadPath);                
-        const outputPath = `./public/images/${user._id}/`;
+        const uploadPath = `./public/images/${user._id}/${filename}.${ext}`;
 
-        if(!existsSync(outputPath)){ 
-            await fs.mkdir(outputPath, { recursive: true });
-        }
+        await file.mv(uploadPath); 
         
         const selectedFile = `/images/${user._id}/${filename}.${ext}`;
-        // const mainFile = `/images/${user._id}/${filename}${new Date().getTime()}.${ext}`;
         
         const data = {...req.body, tags: req.body?.tags.split(','), selectedFile: selectedFile, creator: user.name, owner: user._id,  };
-        // mainFile: mainFile
-        const newData = {
-            data: data,
-        };
-        // mainFile: mainFile  
-        await ImageCompress(req, res, next, uploadPath, outputPath, newData);
+        
+        const newPost = new postModel(data);
+        await newPost.save();
+        return res.status(201).json(newPost);
     }
     catch (err) {
         console.log(err);
@@ -56,29 +48,25 @@ export const updatePost = async (req, res, next) =>{
             const filename = `file_${new Date().getTime()}_${randomUUID()}`; 
             const ext = (file.name).split('.')[1]; // extension of file
             
-            const uploadPath = `./public/images/temp/${filename}.${ext}`; 
-            await file.mv(uploadPath);
-            const outputPath = `./public/images/${userId}/`;
-
-            if(!existsSync(outputPath)){
-                await fs.mkdir(outputPath, { recursive: true});
+            const output = `./public/images/${userId}`
+            if(!existsSync(output)){
+                await fs.mkdir(output, { recursive: true});
             }
 
+            const uploadPath = `./public/images/${userId}/${filename}.${ext}`; 
+            await file.mv(uploadPath); 
+
             const selectedFile = `/images/${userId}/${filename}.${ext}`;
-            // const mainFile = `/images/${userId}/${filename}${new Date().getTime()}.${ext}`;
+            
             const data = {
                 ...req.body,
                 tags : req.body['tags'].split(','),
                 selectedFile: selectedFile,
             };
-            // mainFile: mainFile
-            const newData = {
-                data: data,
-                old_file: old_file,
-                postId: postId,
-            };
-            // mainFile: mainFile,
-            await ImageCompress(req, res, next, uploadPath, outputPath, newData);
+              
+            const newData = await postModel.findByIdAndUpdate({'_id': postId}, data, {new : true});
+            await fs.unlink(`./public${postData['old_file']}`); // after new file add / then delete
+            return res.status(203).json(newData);
         }
         else{
             const data = {
@@ -154,28 +142,5 @@ export const getSinglePost = async(req, res) => {
         console.log(err);
         return res.status(403).json({message: err.message});
     }
-}
-
-
-const ImageCompress = async (req, res, next, uploadPath, outputPath, postData) => {
-    const compression = 30;
-    compress_images(uploadPath, outputPath, { compress_force: false, statistic: true, autoupdate: true }, false,
-        { jpg: { engine: "mozjpeg", command: ["-quality", compression] } },
-        { png: { engine: "pngquant", command: ["--quality=" + compression + "-" + compression, "-o"] } },
-        { svg: { engine: "svgo", command: "--multipass" } },
-        { gif: { engine: "gifsicle", command: ["--colors", "64", "--use-col=web"] } },
-        async function (error, completed, statistic) {
-            await fs.unlink(uploadPath);
-            if (postData['postId']) {
-                const newData = await postModel.findByIdAndUpdate({'_id': postData['postId']}, postData['data'], {new : true});
-                await fs.unlink(`./public${postData['old_file']}`); // after new file add / then delete
-                return res.status(203).json(newData);
-            }else{
-                const newPost = new postModel(postData['data']);
-                await newPost.save();
-                return res.status(201).json(newPost);
-            }
-        }
-    ) 
 }
 
