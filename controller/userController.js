@@ -39,7 +39,7 @@ export const signUp = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(password, 12)
 
-        const user = await userModel.create({ email, password: hashPassword, name: `${firstname} ${lastname}` })
+        const user = await userModel.create({ email, password: hashPassword, name: `${firstname.toUpperCase()} ${lastname.toUpperCase()}` })
 
         user.save()
 

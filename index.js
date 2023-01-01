@@ -4,7 +4,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import postRouter from './Routes/postRoutes.js'
 import userRouter from './Routes/userRoutes.js' 
-import dotenv from 'dotenv'
+import dotenv from 'dotenv' 
 import fileUpload from 'express-fileupload'
 
 dotenv.config()
@@ -22,7 +22,9 @@ app.use(function (req, res, next) {
 });
 
 
+
 app.use(fileUpload())
+
 app.use(bodyParser.json({limit: "30mb", extended: true}))
 app.use(bodyParser.urlencoded({limit: "30mb", extended: true}))
 

@@ -5,7 +5,6 @@ import userModel from "../model/userModel.js";
 export const createPost = async (req, res, next) => {
   try { 
     const user = await userModel.findById(req.userId);
-    
     const data = {
       ...req.body,
       tags: req.body?.tags.split(","), 
@@ -14,7 +13,6 @@ export const createPost = async (req, res, next) => {
     }; 
     const newPost = new postModel(data);
     await newPost.save(); 
-    console.log(newPost);
     return res.status(201).json(newPost);
   } catch (err) { 
     console.log(req.body);
@@ -25,8 +23,8 @@ export const createPost = async (req, res, next) => {
 
 export const updatePost = async (req, res, next) => {
   try { 
-      const { postId } = req.params
-       
+      const { postId } = req.params 
+
       const data = {
         ...req.body,
         tags: req.body["tags"].split(","), 
@@ -34,8 +32,7 @@ export const updatePost = async (req, res, next) => {
       
       const newData = await postModel.findByIdAndUpdate({ _id: postId }, data, {
         new: true,
-      });
-        
+      }); 
       return res.status(203).json(newData); 
   } catch (err) { 
     console.log(req.body);
@@ -64,15 +61,16 @@ export const getPageWithSearch = async (req, res) => {
     // search Query
     const title = req.params?.title ? req.params.title : "null";
     const tags = req.params?.tags ? req.params.tags : "null";
+    const creator = req.params?.creator ? req.params.creator : "null";
 
-    if (title != "null" || tags != "null") {
+    if (title != "null" || tags != "null" || creator != "null") {
       const query = new RegExp(title, "i");
       const count = await postModel
-        .find({ $or: [{ title: query }, { tags: { $in: tags.split(",") } }] })
+        .find({ $or: [{ title: query }, { tags: { $in: tags.split(",") } }, {creator: creator}] })
         .countDocuments();
       const totalPage = Math.ceil(count / Limit);
       const posts = await postModel
-        .find({ $or: [{ title: query }, { tags: { $in: tags.split(",") } }] })
+        .find({ $or: [{ title: query }, { tags: { $in: tags.split(",") } }, {creator: creator}] })
         .skip(start)
         .limit(Limit);
       if (posts == "")
