@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.get('/?search=:title/:tags/:page', getPageWithSearch)
 router.get('/:id', getSinglePost)
-router.post('/', auth, createPost)
+router.post('/new', auth, createPost)
 router.patch('/:postId', auth, updatePost)
 router.delete('/:id', auth, deletePost)
 router.patch('/:id/likePost', auth, likePost)

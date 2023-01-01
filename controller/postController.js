@@ -17,6 +17,8 @@ export const createPost = async (req, res, next) => {
     console.log(newPost);
     return res.status(201).json(newPost);
   } catch (err) { 
+    console.log(req.body);
+    console.log(err.message);
     return res.status(409).json({ message: err.message });
   }
 };
@@ -36,7 +38,8 @@ export const updatePost = async (req, res, next) => {
         
       return res.status(203).json(newData); 
   } catch (err) { 
-
+    console.log(req.body);
+    console.log(err.message);
     res.status(409).json({ message: err.message });
   }
 };
